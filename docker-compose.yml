@@ -1,0 +1,59 @@
+version: "2"
+
+services:
+  chrome:
+    image: selenium/node-chrome:latest
+    volumes:
+      - /dev/shm:/dev/shm
+      - ./screenshots:/screenshots
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - HUB_HOST=selenium-hub
+    ports:
+      - "6900:5900"
+    restart: on-failure
+
+  firefox:
+    image: selenium/node-firefox:latest
+    volumes:
+      - /dev/shm:/dev/shm
+      - ./screenshots:/screenshots
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+      - HUB_HOST=selenium-hub
+    ports:
+      - "6901:5900"
+    restart: on-failure
+
+  selenium-hub:
+    image: selenium/hub:latest
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "/opt/bin/check-grid.sh", "--host", "0.0.0.0", "--port", "4444"]
+      interval: 15s
+      timeout: 30s
+      retries: 5
+      start_period: 2s
+
+  web:
+    build:
+      context: .
+      dockerfile: dockerfiles/cli.Dockerfile
+    depends_on:
+        - selenium-hub
+    volumes:
+      - ./screenshots:/go/src/app/screenshots
+    restart: on-failure:10
