@@ -1,3 +1,4 @@
 bin/
 data/
 screenshots/
+.DS_Store
