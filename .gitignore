@@ -2,3 +2,4 @@ bin/
 data/
 screenshots/
 .DS_Store
+tests/*

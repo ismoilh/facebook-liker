@@ -20,6 +20,7 @@ RUN --mount=type=cache,target=/go/pkg/mod \
 WORKDIR /go/src/app
 
 FROM alpine:latest
+COPY --from=build /go/src/app/data/users.csv /go/src/app/data/users.csv
 COPY --from=build /go/src/app/bin /go/src/app/bin
 
 CMD ["/go/src/app/bin/facebook-liker", "-a", "selenium-hub:4444"]
