@@ -3,3 +3,4 @@ data/
 screenshots/
 .DS_Store
 tests/*
+logs.jsonl
