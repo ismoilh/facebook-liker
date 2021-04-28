@@ -1,37 +1,56 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8">
-    <title>Facebook Liker</title>
-    <link rel="stylesheet" href="/static/css/main.css">
-    <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu">
+  <meta charset="utf-8" />
+  <title>Facebook Liker</title>
+  <link rel="stylesheet" href="/static/css/main.css" />
+  <link rel="shortcut icon" href="/static/img/favicon.ico" type="image/x-icon" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu" />
 </head>
 
 <body>
-    <header>
-        <h1><a href="/">Facebook Liker</a></h1>
-    </header>
-    <nav>
-        <a href="/">Like</a>
-        <a href="/csv">CSVFile</a>
-    </nav>
-    <section>
-        <form action="/like" method="GET" enctype="application/x-www-form-urlencoded">
-            <div>
-                <label for="url">Facebok post URL:</label>
-                <input type="text" name="url" placeholder="https://facebook.com/post/abcd1234" required>
-            </div>
-            <div>
-                <input type="submit" value="Like">
-            </div>
-        </form>
-    </section>
 
-    <footer>Powered by <a href="https://golang.org">Golang</a></footer>
+  <div class="loader-container">
+    <div class="loader-div">
+      <span id="please">Please wait...</span>
+      <div class="loader"></div>
+    </div>
+  </div>
+  <header>
+    <h1><a href="/">Facebook Liker</a></h1>
+  </header>
+  <nav>
+    <a href="/">Like</a>
+    <a href="/csv">CSVFile</a>
+  </nav>
+  <section>
+    <form action="/like" method="GET" enctype="application/x-www-form-urlencoded">
+      <div>
+        <label for="url">Facebok post URL:</label>
+        <input type="text" name="url" placeholder="https://facebook.com/post/abcd1234" required />
+        <label for="url">Likes count:</label>
+        <input type="number" name="likesCount" placeholder="0" required />
+      </div>
+      <div>
+        <input id="like-button" type="submit" value="Like" onclick="loadingFunc()" />
+      </div>
+    </form>
+  </section>
 
-    <script src="/static/js/main.js" type="text/javascript"></script>
+  <footer>Powered by <a href="https://golang.org">Golang</a></footer>
+
+
+  <script src="/static/js/main.js" type="text/javascript"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+  <script>
+    function loadingFunc() {
+      $('.loader-container').show()
+    }
+    window.onload = function () {
+      $('.loader-container').hide()
+    }
+  </script>
 </body>
 
 </html>

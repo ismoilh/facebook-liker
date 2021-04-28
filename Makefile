@@ -7,4 +7,4 @@ run:
 	./bin/facebook-liker -a 0.0.0.0:7070 -s 127.0.0.1:4444
 
 docker-build-run:
-	docker compose up --build --force-recreate
+	sudo docker-compose up --build --force-recreate

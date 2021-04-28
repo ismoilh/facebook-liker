@@ -5,7 +5,6 @@ import (
 	"embed"
 	"facebook-liker/internal/scrapper"
 	"net/http"
-	"sync"
 	"text/template"
 	"time"
 
@@ -19,8 +18,7 @@ type Server struct {
 	templates *template.Template
 
 	// a pool of selenium drivers(browsers)
-	driverPool *sync.Pool
-
+	scrp *scrapper.Scrapper
 }
 
 //go:embed templates/*.html
@@ -31,14 +29,14 @@ var staticContents embed.FS
 
 // New constructs http server, configures it,
 // and returns it
-func New(addr string, scrp *scrapper.Scrapper) (*Server, error) {
+func New(addr string) (*Server, error) {
 	var (
 		err error
 		srv = &Server{}
 	)
 
 	srv.httpServer = &http.Server{
-		Addr: addr,
+		Addr:    addr,
 		Handler: srv.routes(),
 	}
 
@@ -47,15 +45,9 @@ func New(addr string, scrp *scrapper.Scrapper) (*Server, error) {
 		return nil, errors.WithMessage(err, "failed to parse templates")
 	}
 
-	srv.driverPool = &sync.Pool{
-		New: func() interface{} {
-			wd, err := scrp.Start()
-			if err != nil {
-				return errors.WithMessage(err, "failed to start browser")
-			}
-
-			return wd
-		},
+	srv.scrp, err = scrapper.New("selenium-hub:4444")
+	if err != nil {
+		return nil, errors.WithMessage(err, "failed to create new scrapper")
 	}
 
 	return srv, nil
