@@ -13,6 +13,11 @@ services:
       - SE_EVENT_BUS_PUBLISH_PORT=4442
       - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
       - HUB_HOST=selenium-hub
+      - NODE_APPLICATION_NAME=@A
+      - NODE_MAX_INSTANCES=10
+      - NODE_MAX_SESSION=10
+      - HUB_PORT_4444_TCP_ADDR=hub
+      - HUB_PORT_4444_TCP_PORT=4444
     ports:
       - "6900:5900"
     restart: on-failure
@@ -41,12 +46,18 @@ services:
       - "4443:4443"
       - "4444:4444"
     restart: on-failure
-    healthcheck:
-      test: ["CMD", "/opt/bin/check-grid.sh", "--host", "0.0.0.0", "--port", "4444"]
-      interval: 15s
-      timeout: 30s
-      retries: 5
-      start_period: 2s
+    environment:
+      - GRID_MAX_SESSION=20
+      - GRID_TIMEOUT=12000
+      - GRID_NEW_SESSION_WAIT_TIMEOUT=30000
+      - GRID_DEBUG=true
+      - GRID_CLEAN_UP_CYCLE=20000
+    # healthcheck:
+    #   test: ["CMD", "/opt/bin/check-grid.sh", "--host", "0.0.0.0", "--port", "4444"]
+    #   interval: 15s
+    #   timeout: 30s
+    #   retries: 5
+    #   start_period: 2s
 
   server:
     build:
@@ -55,7 +66,7 @@ services:
     ports:
       - "7070:7070"
     depends_on:
-        - selenium-hub
+      - selenium-hub
     volumes:
       - ./screenshots:/go/src/app/screenshots
     restart: on-failure:10

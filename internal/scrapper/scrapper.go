@@ -18,10 +18,10 @@ type Scrapper struct {
 
 // options for Browser
 type options struct {
-	browserName string
-	browserArgs []string
+	browserName  string
+	browserArgs  []string
 	maxInstances int
-	maxSessions int
+	maxSessions  int
 }
 
 // Option is a an option for configuring browser
@@ -35,10 +35,10 @@ func New(seleniumAddr string, opts ...Option) (*Scrapper, error) {
 
 	// default options if they are not specified
 	defaultOpts := options{
-		browserName: "chrome",
-		browserArgs: []string{"--headless"},
+		browserName:  "chrome",
+		browserArgs:  []string{"--headless", "--window-size=450x1500"},
 		maxInstances: 10,
-		maxSessions: 10,
+		maxSessions:  10,
 	}
 
 	// override default options if they are specified
@@ -47,28 +47,28 @@ func New(seleniumAddr string, opts ...Option) (*Scrapper, error) {
 	}
 
 	caps := selenium.Capabilities{
-		"browserName": defaultOpts.browserName,
+		"browserName":  defaultOpts.browserName,
 		"maxInstances": defaultOpts.maxInstances,
-		"maxSessions": defaultOpts.maxSessions,
+		"maxSessions":  defaultOpts.maxSessions,
 	}
 
 	// add browser args
 	if defaultOpts.browserName == "firefox" {
 		firefoxCaps := firefox.Capabilities{}
 		firefoxCaps.Args = append(firefoxCaps.Args, defaultOpts.browserArgs...)
-		
+
 		caps.AddFirefox(firefoxCaps)
 	} else if defaultOpts.browserName == "chrome" {
 		chromeCaps := chrome.Capabilities{}
 		chromeCaps.Args = append(chromeCaps.Args, defaultOpts.browserArgs...)
-		
+
 		caps.AddChrome(chromeCaps)
 	} else {
 		return nil, errors.Errorf("unsupported browser: %s", defaultOpts.browserName)
 	}
 
 	browser := &Scrapper{
-		caps: caps,
+		caps:            caps,
 		seleniumHubAddr: fmt.Sprintf("http://%s/wd/hub", seleniumAddr),
 	}
 

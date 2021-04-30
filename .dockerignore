@@ -9,6 +9,4 @@ dockerfiles/*
 .dockerignore
 .envrc
 tests/*
-screenshots/*
-data/*
 .DS_Store

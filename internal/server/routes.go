@@ -11,7 +11,7 @@ import (
 func (srv *Server) routes() *mux.Router {
 	router := mux.NewRouter()
 
-	router.Handle("/", http.HandlerFunc(srv.handleRoot))
+	router.Handle("/view", http.HandlerFunc(srv.handleRoot))
 
 	router.Handle("/like", http.HandlerFunc(srv.handleLike))
 

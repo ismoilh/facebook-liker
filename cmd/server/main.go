@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"facebook-liker/internal/scrapper"
 	"facebook-liker/internal/server"
 	"net"
 	"os"
@@ -122,11 +121,11 @@ func init() {
 	conf = &Config{
 		Addr: &addr{},
 		Selenium: &struct {
-			Addr string
-			BrowserName string
-			BrowserArgs []string
+			Addr         string
+			BrowserName  string
+			BrowserArgs  []string
 			MaxInstances int
-			MaxSessions int
+			MaxSessions  int
 		}{},
 		Logs: &struct {
 			Path  string
@@ -172,16 +171,16 @@ var rootCmd = &cobra.Command{
 		}()
 
 		// init scrapper config
-		scrp, err := scrapper.New(
-			conf.Selenium.Addr,
-			scrapper.OptBrowserName(conf.Selenium.BrowserName),
-			scrapper.OptBrowserArgs(conf.Selenium.BrowserArgs),
-			scrapper.OptMaxInstances(conf.Selenium.MaxInstances),
-			scrapper.OptMaxSessions(conf.Selenium.MaxSessions),
-		)
+		// scrp, err := scrapper.New(
+		// 	conf.Selenium.Addr,
+		// 	scrapper.OptBrowserName(conf.Selenium.BrowserName),
+		// 	scrapper.OptBrowserArgs(conf.Selenium.BrowserArgs),
+		// 	scrapper.OptMaxInstances(conf.Selenium.MaxInstances),
+		// 	scrapper.OptMaxSessions(conf.Selenium.MaxSessions),
+		// )
 
 		// init server
-		srv, err := server.New(conf.Addr.String(), scrp)
+		srv, err := server.New(conf.Addr.String())
 		if err != nil {
 			return errors.WithMessage(err, "failed to construct server")
 		}
