@@ -36,7 +36,7 @@ func New(seleniumAddr string, opts ...Option) (*Scrapper, error) {
 	// default options if they are not specified
 	defaultOpts := options{
 		browserName:  "chrome",
-		browserArgs:  []string{"--headless", "--window-size=375x850"},
+		browserArgs:  []string{"--headless", "--window-size=450x1500"},
 		maxInstances: 10,
 		maxSessions:  10,
 	}

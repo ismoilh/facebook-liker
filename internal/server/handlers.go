@@ -47,16 +47,18 @@ func (srv *Server) handleLike(rw http.ResponseWriter, r *http.Request) {
 	}
 
 	var (
-		PostsURL   string = name
-		likesCount int64  = likesValue
-		count      int64  = 0
+		PostsURL string = name
+		count    int64  = 0
 	)
 
 	subLogger.Info().Msg("SUCCESSFULLY got browser from pool")
 
 	users := readUsersFromCSV(*csvPath)
-	for _, u := range users {
-		if count != likesCount {
+	go func() {
+		for _, u := range users {
+			if count == likesValue {
+				break
+			}
 			wd, err := srv.scrp.Start()
 			if err != nil {
 				log.Logger.Err(err).Msg("Failed to start scrapper")
@@ -74,17 +76,17 @@ func (srv *Server) handleLike(rw http.ResponseWriter, r *http.Request) {
 
 			// wait for the login page to load
 			time.Sleep(time.Second * 5)
-
-			// find accept cookies button
-			elem, err := wd.FindElement(selenium.ByXPATH, `/html/body/div[3]/div[2]/div/div/div/div/div[3]/button[2]`)
-			if err != nil {
-				log.Logger.Err(err).Msg("failed to find accept cookies button: \n")
-				continue
-			}
-			err = elem.Click()
-			if err != nil {
-				log.Logger.Err(err).Msg("failed to click on accept cookies button\n")
-				continue
+			elem, _ := wd.FindElement(selenium.ByXPATH, `/html/body/div[3]/div[2]/div/div/div/div/div[3]/button[2]`)
+			// if err != nil {
+			// 	log.Logger.Err(err).Msg("failed to find accept cookies button: \n")
+			// 	continue
+			// }
+			if elem != nil {
+				err = elem.Click()
+				if err != nil {
+					log.Logger.Err(err).Msg("failed to click on accept cookies button\n")
+					continue
+				}
 			}
 
 			// wait for the accept cookies windows to disappear
@@ -177,9 +179,8 @@ func (srv *Server) handleLike(rw http.ResponseWriter, r *http.Request) {
 			log.Logger.Info().Msg("SUCCESSFULLY navigated to posts url page")
 
 			time.Sleep(5 * time.Second)
-			// makeScreenshot(wd, fmt.Sprintf("login-%s.png", u.Email))
 			// click like button
-			elem, err = wd.FindElement(selenium.ByXPATH, `/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div/div[2]/div/div/div/div[1]/div[2]/div/div[2]/div/div[1]`)
+			elem, err = wd.FindElement(selenium.ByXPATH, `/html/body/div[1]/div/div[1]/div/div[3]/div/div/div[1]/div[1]/div[2]/div/div[2]/div/div/div/div/div[1]/div/div/div/div[2]/div[3]/div/div/div/div[1]/div/span[1]/div/div/span/div[1]`)
 
 			if err != nil {
 				log.Logger.Err(err).Msg("failed to find like button\n")
@@ -193,7 +194,6 @@ func (srv *Server) handleLike(rw http.ResponseWriter, r *http.Request) {
 			}
 			count++
 			time.Sleep(5 * time.Second)
-			// makeScreenshot(wd, fmt.Sprintf("login-%s.png", u.Email))
 
 			// close browser when we are done
 			if err := wd.Close(); err != nil {
@@ -204,14 +204,14 @@ func (srv *Server) handleLike(rw http.ResponseWriter, r *http.Request) {
 			if err := wd.Close(); err != nil {
 				log.Logger.Err(err).Msg("failed to close selenium driver: \n")
 				continue
+			} else {
+				wd.Quit()
 			}
-			wd.Quit()
-		} else {
-			break
 		}
-	}
+		http.Redirect(rw, r, "/csv", http.StatusOK)
+	}()
 
-	http.Redirect(rw, r, "/", http.StatusOK)
+	http.Redirect(rw, r, "/csv", http.StatusOK)
 }
 
 func (srv *Server) handleCSV(rw http.ResponseWriter, r *http.Request) {
